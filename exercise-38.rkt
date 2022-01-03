@@ -11,5 +11,3 @@
    (if (string? str)
       (substring str 0 (- (string-length str) 1))
       (error "Not a string")))
-
-(string-remove-last "hello")
