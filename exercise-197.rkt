@@ -67,3 +67,14 @@
     [else (most-frequent (rest dict)
                          (if (>= (letter-count-count (first dict)) (letter-count-count lc))
                              (first dict) lc))]))
+
+; List-of-letters Dictionary -> Dictionary
+(check-expect (count-by-letter-v2 (list "a" "b" "c") (list "a" "ab" "abc" "b" "bc" "c"))
+              (list (make-letter-count "a" 3)
+                    (make-letter-count "b" 2)
+                    (make-letter-count "c" 1)))
+(define (count-by-letter-v2 lol dict)
+  (cond
+    [(empty? lol) '()]
+    [else (cons (make-letter-count (first lol) (start-with# (first lol) dict))
+                (count-by-letter-v2 (rest lol) dict))]))
