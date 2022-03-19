@@ -59,7 +59,3 @@
     [(empty? los) '()]
     [(member? (first los) AS-LIST) (cons (first los) (in-dictionary (rest los)))]
     [else (in-dictionary (rest los))]))
-
-
-
-
