@@ -3,6 +3,7 @@
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname itunes) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require 2htdp/itunes)
 
+; Part I
 ; An LTracks is one of:
 ; – '()
 ; – (cons Track LTracks)
@@ -177,3 +178,100 @@
 ; LTracks -> List-of-LTracks
 (define (select-albums tracks)
   (album-tracks tracks (album-titles tracks)))
+
+; Part II
+
+; An LLists is one of:
+; – '()
+; – (cons LAssoc LLists)
+ 
+; An LAssoc is one of: 
+; – '()
+; – (cons Association LAssoc)
+; 
+; An Association is a list of two items: 
+;   (cons String (cons BSDN '()))
+ 
+; A BSDN is one of: 
+; – Boolean
+; – Number
+; – String
+; – Date
+
+; LLists
+(define list-tracks
+  (read-itunes-as-lists ITUNES-LOCATION))
+
+; Exercise 205. Develop examples of LAssoc and LLists, that is, the list representation of tracks and lists of such tracks.
+; Association
+(define racket-article-1 (cons "Title" (cons "Why I learned Racket?" '())))
+(define racket-article-2 (cons "Title" (cons "Racket prose and cons" '())))
+(define ts-article-1 (cons "Title" (cons "TypeScript in 2022" '())))
+(define ts-article-2 (cons "Title" (cons "TypeScript prose and cons" '())))
+ 
+; LAssoc
+(define racket-articles (cons racket-article-1 (cons racket-article-2 '())))
+(define ts-articles (cons ts-article-1 (cons ts-article-2 '())))
+
+; LLists
+(define blog (cons racket-articles (cons ts-articles '())))
+
+(define LLIST-STUB (list (list
+                          (list "Album" "Toxicity")
+                          (list "Artist" "SOAD")
+                          (list "Name" "Toxicity")
+                          (list "Total Time" 240000))
+                         (list
+                          (list "Album" "Toxicity")
+                          (list "Artist" "SOAD")
+                          (list "Name" "Bounce")
+                          (list "Total Time" 240000))
+                         ))
+
+; Exercise 206. Design the function find-association.
+; It consumes three arguments: a String called key, an LAssoc, and an element of Any called default.
+; It produces the first Association whose first item is equal to key, or default if there is no such Association.
+; String LAssoc Any -> Association | Any
+(check-expect (find-association "Title" racket-articles "Not found")
+              racket-article-1)
+(check-expect (find-association "Unknown" racket-articles "Not found")
+              "Not found")
+(define (find-association key la default)
+  (cond
+    [(empty? la) default]
+    [(string=? key (first (first la))) (first la)]
+    [else (find-association key (rest la) default)]))
+
+; Exercise 207. Design total-time/list, which consumes an LLists and produces the total amount of play time.
+
+; LLists -> Number
+(check-expect (total-time/list LLIST-STUB)
+              480000)
+(check-expect (total-time/list '())
+              0)
+(define (total-time/list ll)
+  (cond
+    [(empty? ll) 0]
+    [else (+
+           (second (assoc "Total Time" (first ll)))
+           (total-time/list (rest ll)))]))
+
+; Exercise 208. Design boolean-attributes.
+; The function consumes an LLists and produces the Strings that are associated with a Boolean attribute.
+; LLists -> List-of-strings
+(check-expect (boolean-attributes (list (list (list "active" #t)
+                                              (list "title" "Task"))))
+                                  (list "active"))
+(define (boolean-attributes ll)
+  (cond
+    [(empty? ll) '()]
+    [else (create-set (append (lassoc-bool-attrs (first ll))
+                              (boolean-attributes (rest ll))))]))
+
+; LAssoc -> List-of-strings
+(define (lassoc-bool-attrs lassoc)
+  (cond
+    [(empty? lassoc) '()]
+    [(boolean? (second (first lassoc))) (cons (first (first lassoc))
+                                              (lassoc-bool-attrs (rest lassoc)))]
+    [else (lassoc-bool-attrs (rest lassoc))]))
