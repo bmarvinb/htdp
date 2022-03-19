@@ -28,7 +28,7 @@
 ; a function that consumes a String
 ; and produces its corresponding Word, and a function for the opposite direction.
 
-
+ 
 ; String -> Word
 ; converts s to the chosen word representation
 (define (string->word s)
@@ -70,9 +70,6 @@
     [(member? (first los) AS-LIST) (cons (first los) (in-dictionary (rest los)))]
     [else (in-dictionary (rest los))]))
 
-(check-expect (in-dictionary (list "zombie" "zxc"))
-              (list "zombie"))
-
 ; Exercise 212. Write down the data definition for List-of-words.
 ; Make up examples of Words and List-of-words.
 ; Finally, formulate the functional example from above with check-expect.
@@ -99,15 +96,39 @@
                     (list "a" "x" "b")
                     (list "a" "b" "x")))
 
-
 ; 1String Word -> List-of-words
-; inserts the character x at every position between the characters of the word w
-(define (insert-everywhere str w)
+; Add a 1String before each character in the List-of-words
+(define (insert-everywhere s low)
   (cond
-    [(empty? w) (list (list str))]
-    [else (cons (prepend str w)
-                (prepend-to-each (first w)
-                                 (insert-everywhere str (rest w))))]))
+    [(empty? low) (list (list s))]
+    [else (cons (cons s low)
+                (add-before-each (first low)
+                                 (insert-everywhere s (rest low))))]))
+
+; 1String List-of-words -> List-of-words
+; Add a character to the beginning of each word
+(define (add-before-each s low)
+  (cond
+    [(empty? low) '()]
+    [else (cons (cons s (first low))
+                (add-before-each s (rest low)))])) 
+
+; Exercise 214. Integrate arrangements
+; String -> List-of-strings
+; finds all words that the letters of some given word spell
+(define (alternative-words s)
+  (create-set (in-dictionary (words->strings (arrangements (string->word s))))))
+
+; Tests
+(check-expect (add-before-each "d" '()) '())
+
+(check-expect (add-before-each "d" (list '())) (list (list "d")))
+
+(check-expect (add-before-each "d" (list (list "e") (list "r")))
+              (list (explode "de") (explode "dr")))
+
+(check-expect (add-before-each "d" (list (explode "er") (explode "re")))
+              (list (explode "der") (explode "dre")))
 
 (check-expect (insert-everywhere "d" '())
               (list (list "d")))
@@ -118,30 +139,5 @@
 (check-expect (insert-everywhere "d" (list "e" "r"))
               (list (list "d" "e" "r") (list "e" "d" "r") (list "e" "r" "d")))
 
-; 1String List-of-words -> List-of-words
-; inserts the character x at the beginning of each word in the given list
-(define (prepend-to-each x low)
-  (cond
-    [(empty? low) '()]
-    [else (cons (prepend x (first low))
-                (prepend-to-each x (rest low)))]))
-
-(check-expect (prepend-to-each "d" '()) '())
-(check-expect (prepend-to-each "d" (list '())) (list (list "d")))
-(check-expect (prepend-to-each "d" (list (list "e") (list "r")))
-              (list (explode "de") (explode "dr")))
-(check-expect (prepend-to-each "d" (list (explode "er") (explode "re")))
-              (list (explode "der") (explode "dre")))
-
-; 1String Word -> Word
-; inserts the character x at the beginning of the given word
-(define (prepend x w)
-  (cons x w)) 
-
-; Exercise 214. Integrate arrangements
-; with the partial program from Word Games, Composition Illustrated
-
-; String -> List-of-strings
-; finds all words that the letters of some given word spell
-(define (alternative-words s)
-  (create-set (in-dictionary (words->strings (arrangements (string->word s))))))
+(check-expect (in-dictionary (list "zombie" "zxc"))
+              (list "zombie"))
