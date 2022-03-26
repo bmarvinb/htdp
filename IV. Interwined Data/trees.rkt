@@ -31,6 +31,13 @@
 (check-expect (count-persons Gustav)
               5)
 
+(define (count-persons ft)
+  (cond
+    [(no-parent? ft) 0]
+    [(child? ft) (+ 1
+                    (count-persons (child-father ft))
+                    (count-persons (child-mother ft)))]))
+
 ; FT Date -> Number
 ; count an average age
 
