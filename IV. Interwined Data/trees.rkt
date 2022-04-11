@@ -107,4 +107,18 @@
     ))
 
 
+; Exercise 315. Design the function average-age.
+
+; (List-of FT) Date -> Number
+(define (total-averages loft year)
+   (cond
+    [(empty? loft) 0]
+    [else (+ (average-age (first loft) year)
+             (total-averages (rest loft) year))]))
+
+; (List-of FT) Date -> Number
+(define (average-age-v2 loft year)
+  (/ (total-averages loft year)
+     (length loft)))
+
 
