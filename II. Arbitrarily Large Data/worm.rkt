@@ -11,11 +11,12 @@
 
 (define WORLD-WIDTH 200)
 (define WORLD-HEIGHT 200)
+(define CELL-SIZE 10)
 
 (define MTS (empty-scene WORLD-WIDTH WORLD-HEIGHT))
 
-(define WORM-IMG (square 10 "solid" "red"))
-(define FOOD-IMG (square 10 "solid" "green"))
+(define WORM-IMG (square CELL-SIZE "solid" "red"))
+(define FOOD-IMG (square CELL-SIZE "solid" "green"))
 
 ;; =================
 ;; Data definitions:
@@ -62,8 +63,7 @@
     [else (worm-head (rest lowp))]))
 
 ;; List-of-WormPart -> List-of-WormPart
-(check-expect (worm-tail (cons (make-worm-part 0 0) empty))
-              empty)
+(check-expect (worm-tail (cons (make-worm-part 0 0) empty)) empty)
 
 (check-expect (worm-tail (cons (make-worm-part 0 0)
                                (cons (make-worm-part 0 10)
@@ -75,7 +75,6 @@
   (if (empty? (rest lowp))
       empty
       (cons (first lowp) (worm-tail (rest lowp)))))
-
 
 ;; List-of-WormPart -> Food
 ;; generate new food in random position
@@ -195,9 +194,9 @@
                        (render-worm (rest lowp)))]))
 
 ;; Worm KeyEvent -> Worm
-;; !!!
 (define (handle-key w ke)
   (cond
+    ; by pressing "escape" the game will be started again
     [(key=? ke "escape") (make-worm (cons (make-worm-part 0 0) empty)
                                 (random-food (cons (make-worm-part 0 0) empty))
                                 "down")]
@@ -218,27 +217,29 @@
 ;; Worm -> Boolean
 ;; determine is head hit the wall
 (define (hit-the-wall? w)
-  (or (> (worm-part-y-pos (worm-head (worm-parts w))) WORLD-HEIGHT)
+  (or (> (worm-part-y-pos (worm-head (worm-parts w))) (- WORLD-HEIGHT CELL-SIZE))
       (< (worm-part-y-pos (worm-head (worm-parts w))) 0)
-      (> (worm-part-x-pos (worm-head (worm-parts w))) WORLD-WIDTH)
+      (> (worm-part-x-pos (worm-head (worm-parts w))) (- WORLD-WIDTH CELL-SIZE))
       (< (worm-part-x-pos (worm-head (worm-parts w))) 0)))
 
 ;; List-of-WormPart WormPart -> Boolean
 ;; determine is worm eat himself
 (define (eat-himself? lowp wp)
-  (>= (length (filter (lambda (x) (and (= (worm-part-x-pos x) (worm-part-x-pos wp))
-                                       (= (worm-part-y-pos x) (worm-part-y-pos wp))))
-                      lowp))
-      1))
+  (local (
+          (define EATEN-CELLS (filter (lambda (x) (and (= (worm-part-x-pos x) (worm-part-x-pos wp))
+                                                      (= (worm-part-y-pos x) (worm-part-y-pos wp))))
+                                     lowp))
+          )
+    (>= (length EATEN-CELLS) 1)))
 
 ;; Worm -> Boolean
+;; the game should stop when head hit the wall, or eat himself
 (define (stop-game? w)
   (cond
     [(hit-the-wall? w) #t]
     [(eat-himself? (worm-tail (worm-parts w)) (worm-head (worm-parts w))) #t]
     [else #f]))
 
-;; Worm -> Worm
 (define (main w)
   (big-bang w
     (on-tick tock 0.1)
