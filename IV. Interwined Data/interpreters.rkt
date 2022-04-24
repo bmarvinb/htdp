@@ -8,9 +8,11 @@
 
 (define-struct add [left right])
 (define-struct mul [left right])
-;; Expression is one of:
+;; BSL-var-expr is one of:
 ;; - Number
-;; - (Number Expression)
+;; - Symbol
+;; - (make-add Number BSL-var-expr)
+;; - (make-mul Number BSL-var-expr)
 
 ;; Exercise 347. Design eval-expression.
 ;; The function consumes a representation of a BSL expression and computes its value.
@@ -47,7 +49,7 @@
 (check-expect (eval-bool-expression (make-bool-not #f)) #t)
 (check-expect (eval-bool-expression (make-bool-and #t (make-bool-not #f))) #t)
 
-; Expression -> Boolean
+;; Expression -> Boolean
 (define (eval-bool-expression exp)
   (cond
     [(boolean? exp) exp]
@@ -57,14 +59,14 @@
     [(bool-or? exp) (or (eval-bool-expression (bool-or-left exp))
                         (eval-bool-expression (bool-or-right exp)))]))
 
-; Exercise 349. Create tests for parse
-; S-expr -> Boolean
+;; Exercise 349. Create tests for parse
+;; S-expr -> Boolean
 (define (atom? s)
   (or (number? s)
       (string? s)
       (symbol? s)))
 
-; S-expr -> BSL-expr
+;; S-expr -> BSL-expr
 (check-expect (parse '1) '1)
 (check-expect (parse '(+ 10 -10)) (make-add 10 -10))
 (check-expect (parse '(+ (* 5 5) 25)) (make-add (make-mul 5 5) 25))
@@ -75,19 +77,19 @@
 (check-error (parse '(string-append "hello" "world")) INVALID-BSL)
 (define (parse s)
   (local (
-          ; Atom -> BSL-expr 
+          ;; Atom -> BSL-expr 
           (define (parse-atom s)
             (cond
               [(number? s) s]
               [(string? s) (error INVALID-BSL)]
               [(symbol? s) (error INVALID-BSL)]))
 
-          ; SL -> Boolean
+          ;; SL -> Boolean
           (define (consists-of-3 s)
             (and (cons? s) (cons? (rest s)) (cons? (rest (rest s)))
                  (empty? (rest (rest (rest s))))))
           
-          ; SL -> BSL-expr
+          ;; SL -> BSL-expr
           (define (parse-sl s)
             (cond
               [(and (consists-of-3 s) (symbol? (first s)))
@@ -103,24 +105,24 @@
       [else (parse-sl s)])))
 
 
-; S-expr -> Number
+;; S-expr -> Number
 (check-expect (interpreter-expr '(+ (* 5 5) 25)) 50)
 (define (interpreter-expr s)
   (cond
     [(string? (parse s)) (parse s)]
     [else (eval-expression (parse s))]))
 
-; A BSL-var-expr is one of: 
-; – Number
-; – Symbol 
-; – (make-add BSL-var-expr BSL-var-expr)
-; – (make-mul BSL-var-expr BSL-var-expr)
+;; A BSL-var-expr is one of: 
+;; – Number
+;; – Symbol 
+;; – (make-add BSL-var-expr BSL-var-expr)
+;; – (make-mul BSL-var-expr BSL-var-expr)
 
-; Exercise 352. Design subst.
-; The function consumes a BSL-var-expr ex, a Symbol x, and a Number v.
-; It produces a BSL-var-expr like ex with all occurrences of x replaced by v.
+;; Exercise 352. Design subst.
+;; The function consumes a BSL-var-expr ex, a Symbol x, and a Number v.
+;; It produces a BSL-var-expr like ex with all occurrences of x replaced by v.
 
-; BSL-var-expr Symbol Number -> BSL-var-expr
+;; BSL-var-expr Symbol Number -> BSL-var-expr
 (check-expect (subst 1 'x 2) 1)
 (check-expect (subst 'y 'x 1) 'y)
 (check-expect (subst 'x 'x 1) 1)
@@ -138,13 +140,13 @@
                          (subst (mul-right ex) x v))]
     [else ex]))
 
-; Exercise 353. Design the numeric? function. It determines whether a BSL-var-expr is also a BSL-expr. 
+;; Exercise 353. Design the numeric? function. It determines whether a BSL-var-expr is also a BSL-expr. 
 (check-expect (numeric? 1) #true)
 (check-expect (numeric? 'x) #false)
 (check-expect (numeric? (make-add 'x 1)) #false) 
 (check-expect (numeric? (make-add (make-add 1 2) 3)) #true)
 
-; Expression -> Boolean
+;; Expression -> Boolean
 (define (numeric? ex)
   (cond
     [(symbol? ex) #false]
@@ -155,33 +157,30 @@
                     (numeric? (mul-right ex)))]
     [else #false]))
 
-; Exercise 354. Design eval-variable.
+;; Exercise 354. Design eval-variable.
 (check-expect (eval-variable 1) 1)
 (check-error (eval-variable 'x) ERROR-MESSAGE)
 (check-error (eval-variable (make-add 'x 1)) ERROR-MESSAGE)
 (check-expect (eval-variable (make-add (make-add 1 1) 2)) 4)
 
-; Expression
+;; Expression
 (define (eval-variable ex)
   (cond
     [(numeric? ex) (eval-expression ex)]
     [else (error "Not a numeric value")]))
 
-
-; An AL (short for association list) is [List-of Association].
-; An Association is a list of two items:
-;   (cons Symbol (cons Number '())).
+;; An AL (short for association list) is [List-of Association].
+;; An Association is a list of two items:
+;;   (cons Symbol (cons Number '())).
 
 (define AL '((x 1) (y 2) (z 3)))
 
+;; BSL-var-expr AL -> Number
 (check-expect (eval-variable* (make-add 'x 'y) AL) 3)
-
 (check-expect (eval-variable* (make-add 'x 'y) AL) 3)
 (check-expect (eval-variable* (make-add (make-add 'x 'x) 'y) AL) 4)
 (check-expect (eval-variable* (make-mul (make-add 'x 'x) 'y) AL) 4)
 (check-error (eval-variable* (make-mul (make-add 'a 'x) 'y) AL) ERROR-MESSAGE)
-
-; BSL-var-expr AL -> Number
 (define (eval-variable* ex da)
   (local ((define SUBSTITUTED-EXPRESSION (subst-all ex da)))
     (cond
@@ -191,29 +190,28 @@
 (check-expect (subst-all (make-add 'x 'y) AL) (make-add 1 2))
 (check-expect (subst-all (make-add (make-add 'x 'x) 'y) AL) (make-add (make-add 1 1) 2))
 (check-expect (subst-all (make-mul (make-add 'x 'x) 'y) AL) (make-mul (make-add 1 1) 2))
-
 (define (subst-all ex da)
   (cond
     [(empty? da) ex]
     [else (subst-all (subst ex (first (first da)) (second (first da)))
                      (rest da))]))
 
-; Exercise 355. Design eval-var-lookup.
+;; Exercise 355. Design eval-var-lookup.
+;; BSL-var-expr AL -> Number
 (check-expect (eval-var-lookup (make-add 'x 'y) AL) 3)
 (check-expect (eval-var-lookup (make-add (make-add 'x 'x) 'y) AL) 4)
 (check-expect (eval-var-lookup (make-mul (make-add 'x 'x) 'y) AL) 4)
 (check-error (eval-var-lookup (make-mul (make-add 'a 'x) 'y) AL) UNDEFINED-ERROR)
-
 (define (eval-var-lookup ex da)
   (local ((define SUBSTITUTED-EXPRESSION (replace-variables ex da)))
     (cond
       [(numeric? SUBSTITUTED-EXPRESSION) (eval-expression SUBSTITUTED-EXPRESSION)]
       [else (error SUBSTITUTED-EXPRESSION)])))
 
+;; BSL-var-expr AL -> BSL-var-expr
+;; replace all variables in a BSL-var-expr
 (check-expect (replace-variables (make-add 'x 'y) AL) (make-add 1 2))
 (check-expect (replace-variables (make-add (make-add 'x 'x) 'y) AL) (make-add (make-add 1 1) 2))
-
-; BSL-var-expr AL -> BSL-var-expr
 (define (replace-variables ex da)
   (cond
     [(empty? ex) '()]
@@ -231,6 +229,3 @@
                       (error UNDEFINED-ERROR)
                       (second (assq ex da)))]
     [else (replace-variables ex da)]))
-
-
-
