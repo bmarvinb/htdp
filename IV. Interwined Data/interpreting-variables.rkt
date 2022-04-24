@@ -11,8 +11,8 @@
 ;; - (make-add Number BSL-var-expr)
 ;; - (make-mul Number BSL-var-expr)
 
-;; implemented in exercise 347
 ;; BSL-var-expr -> Number
+;; implemented in exercise 347
 (define (eval-expression exp)
   (cond
     [(number? exp) exp]
