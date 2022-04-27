@@ -13,8 +13,8 @@
 ;; - (make-mul Number BSL-fun-expr)
 ;; - (make-fun Symbol BSL-fun-expr)
 
-(define FUNCTION-NOT-DEFINED "Function not defined")
-(define SYMBOL-NOT-FOUND "Symbol not found")
+(define UNDEFINED-FUN "Function not defined")
+(define UNDEFINED-SYMBOL "Symbol not found")
 
 ;; BSL-var-expr Symbol Number -> BSL-fun-expr
 (check-expect (subst (make-add 'x 2) 'x 2)
@@ -41,7 +41,7 @@
 (define (eval-definition1 ex f x b)
   (cond
     [(number? ex) ex]
-    [(symbol? ex) (error SYMBOL-NOT-FOUND)]
+    [(symbol? ex) (error UNDEFINED-SYMBOL)]
     [(add? ex) (+ (eval-definition1 (add-left ex) f x b)
                   (eval-definition1 (add-right ex) f x b))]
     [(mul? ex) (* (eval-definition1 (mul-left ex) f x b)
@@ -51,7 +51,7 @@
          (local ((define value (eval-definition1 (fun-arg ex) f x b))
                  (define plugd (subst b x value)))
            (eval-definition1 plugd f x b))
-         (error FUNCTION-NOT-DEFINED))]))
+         (error UNDEFINED-FUN))]))
 
 ;; Exercise 358. Provide a structure type and a data definition for function definitions
 
@@ -70,10 +70,10 @@
 ; retrieves the definition of f in da
 ; signals an error if there is none
 (check-expect (lookup-def da-fgh 'g) g)
-(check-error (lookup-def da-fgh 'x) FUNCTION-NOT-DEFINED)
+(check-error (lookup-def da-fgh 'x) UNDEFINED-FUN)
 (define (lookup-def da f)
   (cond
-    [(empty? da) (error FUNCTION-NOT-DEFINED)]
+    [(empty? da) (error UNDEFINED-FUN)]
     [else (if (eq? (fun-def-name (first da)) f)
               (first da)
               (lookup-def (rest da) f))]))
@@ -86,15 +86,17 @@
 (define (eval-function* ex da)
   (cond
     [(number? ex) ex]
-    [(symbol? ex) (error SYMBOL-NOT-FOUND)]
+    [(symbol? ex) (error UNDEFINED-SYMBOL)]
     [(add? ex) (+ (eval-function* (add-left ex) da)
                   (eval-function* (add-right ex) da))]
     [(mul? ex) (* (eval-function* (mul-left ex) da)
                   (eval-function* (mul-right ex) da))]
     [(fun? ex)
-     (local ((define fn (lookup-def da (fun-name ex))))
-     (if (not (empty? fn))
-         (local ((define value (eval-function* (fun-arg ex) da))
-                 (define plugd (subst (fun-def-body fn) (fun-def-param fn) (eval-function* (fun-arg ex) da))))
-           (eval-function* plugd da))
-         (error FUNCTION-NOT-DEFINED)))]))
+      (local ((define function (lookup-def da (fun-name ex))))
+       (if (not (empty? function))
+           (local ((define value (eval-function* (fun-arg ex) da))
+                   (define plugd (subst (fun-def-body function)
+                                        (fun-def-param function)
+                                        (eval-function* (fun-arg ex) da))))
+             (eval-function* plugd da))
+           (error UNDEFINED-FUN)))]))
