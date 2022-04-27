@@ -3,7 +3,7 @@
 #reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-250) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ; [Number -> List-of Number] Number -> List-of Number
 (define (tabulate f n)
-    (cond
+  (cond
     [(= n 0) (list (f 0))]
     [else
      (cons

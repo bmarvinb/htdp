@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-95) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-095) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -67,16 +67,7 @@
     [(aim? s) (aim-render s)]
     [(fired? s) (fired-render s)]))
 
-;(si-render (make-aim
-;            (make-posn 13 20)
-;            (make-tank 28 -3)))
-
-;(si-render (make-fired
-;  (make-posn 20 100)
-;  (make-tank 100 3)
-;  (make-posn 22 103)))
-
 (si-render (make-fired
-  (make-posn 10 20)
-  (make-tank 28 -3)
-  (make-posn 32 (- HEIGHT (image-height TANK) 10))))
+            (make-posn 10 20)
+            (make-tank 28 -3)
+            (make-posn 32 (- HEIGHT (image-height TANK) 10))))

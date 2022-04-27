@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-43) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-043) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -71,9 +71,7 @@
 ; WorldState -> WorldState
 ; launches the program from some initial state 
 (define (main ws)
-   (big-bang ws
-     [on-tick tock]
-     [on-mouse hyper]
-     [to-draw render]))
-
-(main START-POSITION)
+  (big-bang ws
+    [on-tick tock]
+    [on-mouse hyper]
+    [to-draw render]))

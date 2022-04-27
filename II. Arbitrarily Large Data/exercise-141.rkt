@@ -7,8 +7,8 @@
 (check-expect (cat '()) "")
 (check-expect (cat (cons "a" (cons "b" '()))) "ab")
 (check-expect
-  (cat (cons "ab" (cons "cd" (cons "ef" '()))))
-  "abcdef")
+ (cat (cons "ab" (cons "cd" (cons "ef" '()))))
+ "abcdef")
  
 (define (cat l)
   (cond

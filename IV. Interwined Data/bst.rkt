@@ -51,36 +51,36 @@
                         (inorder (node-right bt))))]))
 
 (define bst-1 (make-node
-              63
-              'c
-              (make-node
-               29
-               'x
+               63
+               'c
                (make-node
-                15
-                'z
+                29
+                'x
                 (make-node
-                 10 'i NONE NONE)
-                (make-node
-                 24 'i NONE NONE))
-               NONE)
-              (make-node
-               89
-               'v
-               (make-node
-                77
-                'b
-                NONE
+                 15
+                 'z
+                 (make-node
+                  10 'i NONE NONE)
+                 (make-node
+                  24 'i NONE NONE))
                 NONE)
                (make-node
-                95
-                'n
-                NONE
+                89
+                'v
                 (make-node
-                 99
+                 77
+                 'b
+                 NONE
+                 NONE)
+                (make-node
+                 95
                  'n
                  NONE
-                 NONE)))))
+                 (make-node
+                  99
+                  'n
+                  NONE
+                  NONE)))))
 
 ; Exercise 325
 ; Number BST -> String | NONE
@@ -100,5 +100,7 @@
               )]))
 
 ; Exercise 326
+; !!!
 
 ; Exercise 327
+; !!!

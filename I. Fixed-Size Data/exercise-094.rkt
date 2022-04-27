@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-94) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-094) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -15,7 +15,6 @@
 
 ; (make-game-state Ufo Tank)
 (define-struct game-state [ufo tank])
-
 
 (define UFO-IMAGE (rectangle 50 50 "solid" "red"))
 (define TANK-IMAGE (rectangle 100 50 "solid" "green"))
@@ -35,5 +34,3 @@
 (define (main game-state)
    (big-bang game-state
      [to-draw render]))
-
-(main (make-game-state (make-ufo UFO-IMAGE 100 100) (make-tank TANK-IMAGE 400 400)))

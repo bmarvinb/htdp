@@ -198,8 +198,8 @@
   (cond
     ; by pressing "escape" the game will be started again
     [(key=? ke "escape") (make-worm (cons (make-worm-part 0 0) empty)
-                                (random-food (cons (make-worm-part 0 0) empty))
-                                "down")]
+                                    (random-food (cons (make-worm-part 0 0) empty))
+                                    "down")]
     [(or (string=? (worm-direction w) "up") (string=? (worm-direction w) "down"))
      (cond
        [(key=? ke "right") (make-worm (worm-parts w) (worm-food w) "right")]
@@ -227,8 +227,8 @@
 (define (eat-himself? lowp wp)
   (local (
           (define EATEN-CELLS (filter (lambda (x) (and (= (worm-part-x-pos x) (worm-part-x-pos wp))
-                                                      (= (worm-part-y-pos x) (worm-part-y-pos wp))))
-                                     lowp))
+                                                       (= (worm-part-y-pos x) (worm-part-y-pos wp))))
+                                      lowp))
           )
     (>= (length EATEN-CELLS) 1)))
 

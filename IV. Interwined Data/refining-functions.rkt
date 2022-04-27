@@ -9,9 +9,9 @@
 
 ; (define O (create-dir "/Users/dmitrymoiseev/Documents/racket"))
 (define O (make-dir
- "racket"
- (list (make-dir "another-dir" '() '()) (make-dir "example-dir" (list (make-dir "secret-dir" '() '())) (list (make-file "secret.txt" 7 (make-date 2022 4 18 19 56 29) ""))))
- (list (make-file "test.txt" 28 (make-date 2022 4 18 19 28 53) ""))))
+           "racket"
+           (list (make-dir "another-dir" '() '()) (make-dir "example-dir" (list (make-dir "secret-dir" '() '())) (list (make-file "secret.txt" 7 (make-date 2022 4 18 19 56 29) ""))))
+           (list (make-file "test.txt" 28 (make-date 2022 4 18 19 28 53) ""))))
 
 (define (how-many dir)
   (+ (length (dir-files dir))
@@ -91,11 +91,3 @@
 (define (du dir)
   (+ (dir-sizes (dir-dirs dir))
      (file-sizes (dir-files dir))))
-
-
-
-
-
-
-
-

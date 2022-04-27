@@ -23,7 +23,7 @@
             (cond
               [(zero? n) '()]
               [else (cons (generate-row n cols)
-                         (generate-matrix (- n 1)))]))
+                          (generate-matrix (- n 1)))]))
 
           ;; N N -> [List-of N]
           (define (generate-row n len)

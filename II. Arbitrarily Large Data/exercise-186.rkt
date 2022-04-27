@@ -2,7 +2,6 @@
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-186) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ; NEList-of-temperatures -> Boolean
-
 (define (sorted>? l)
   (cond
     [(empty? (rest l)) #true]

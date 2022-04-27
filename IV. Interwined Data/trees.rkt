@@ -29,9 +29,7 @@
 ; FT -> Number
 ; counts children
 
-(check-expect (count-persons Gustav)
-              5)
-
+(check-expect (count-persons Gustav) 5)
 (define (count-persons ft)
   (cond
     [(no-parent? ft) 0]
@@ -45,9 +43,7 @@
 ; FT Date -> Number
 ; count an average age
 
-(check-expect (average-age Gustav 2022)
-              68)
-
+(check-expect (average-age Gustav 2022) 68)
 (define (average-age ft year)
   (local (
           (define (years ft year)
@@ -106,12 +102,11 @@
         (blue-eyed-ancestor? (child-mother ft)))])
     ))
 
-
 ; Exercise 315. Design the function average-age.
 
 ; (List-of FT) Date -> Number
 (define (total-averages loft year)
-   (cond
+  (cond
     [(empty? loft) 0]
     [else (+ (average-age (first loft) year)
              (total-averages (rest loft) year))]))
@@ -120,5 +115,3 @@
 (define (average-age-v2 loft year)
   (/ (total-averages loft year)
      (length loft)))
-
-

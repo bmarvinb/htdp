@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-53) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-053) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 (require 2htdp/image)
 (require 2htdp/universe)
 
@@ -14,14 +14,25 @@
 (define CENTER (/ (image-height ROCKET) 2))
 
 ; LRCD -> Image
-; renders the state as a resting or flying rocket 
+; renders the state as a resting or flying rocket
+(check-expect
+ (show 53)
+ (place-image ROCKET 10 53 BACKG))
+(check-expect
+ (show -2)
+ (place-image (text "-2" 20 "red")
+              10 (* 3/4 WIDTH)
+              (place-image ROCKET 10 HEIGHT BACKG)))
+(check-expect
+ (show "resting")
+ (place-image ROCKET 10 HEIGHT BACKG))
 (define (show x)
   (cond
     [(string? x)
      (place-image ROCKET 10 HEIGHT BACKG)]
     [(<= -3 x -1) (place-image (text "-2" 20 "red")
-              10 (* 3/4 WIDTH)
-              (place-image ROCKET 10 HEIGHT BACKG))]
+                               10 (* 3/4 WIDTH)
+                               (place-image ROCKET 10 HEIGHT BACKG))]
     [(>= x 0) (place-image ROCKET 10 53 BACKG)]))
  
 ; LRCD KeyEvent -> LRCD
@@ -35,18 +46,3 @@
 ;  if it is moving already 
 (define (fly x)
   x)
-
-
-(check-expect
- (show "resting")
- (place-image ROCKET 10 HEIGHT BACKG))
- 
-(check-expect
- (show -2)
- (place-image (text "-2" 20 "red")
-              10 (* 3/4 WIDTH)
-              (place-image ROCKET 10 HEIGHT BACKG)))
- 
-(check-expect
- (show 53)
- (place-image ROCKET 10 53 BACKG))

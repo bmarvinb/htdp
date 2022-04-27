@@ -92,7 +92,7 @@
     [(mul? ex) (* (eval-function* (mul-left ex) da)
                   (eval-function* (mul-right ex) da))]
     [(fun? ex)
-      (local ((define function (lookup-def da (fun-name ex))))
+     (local ((define function (lookup-def da (fun-name ex))))
        (if (not (empty? function))
            (local ((define value (eval-function* (fun-arg ex) da))
                    (define plugd (subst (fun-def-body function)

@@ -44,5 +44,3 @@
     [on-tick tock]
     [on-key keyh]
     [to-draw to-image]))
-
-(main (cons 0 '()))

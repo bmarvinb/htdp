@@ -16,7 +16,7 @@
 (check-expect (search-sorted 5 (list 1 2 3 4)) #false)
 (check-expect (search-sorted 5 '()) #false)
 (define (search-sorted n alon)
- (cond
+  (cond
     [(or (empty? alon) (> (first alon) n)) #f]
     [(= n (first alon)) #t]
     [else (search-sorted n (rest alon))]))

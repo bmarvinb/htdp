@@ -8,4 +8,4 @@
   (local (
           (define (dollar->euro dollar)
             (/ dollar 1.06)))
-          (map dollar->euro lod)))
+    (map dollar->euro lod)))

@@ -261,7 +261,7 @@
 ; LLists -> List-of-strings
 (check-expect (boolean-attributes (list (list (list "active" #t)
                                               (list "title" "Task"))))
-                                  (list "active"))
+              (list "active"))
 (define (boolean-attributes ll)
   (cond
     [(empty? ll) '()]

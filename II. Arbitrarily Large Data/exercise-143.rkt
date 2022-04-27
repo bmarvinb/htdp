@@ -6,18 +6,18 @@
 (check-expect (average (cons 1 (cons 2 (cons 3 '())))) 2)
 (check-error (average '()) "List-of-temperatures cannot be empty")
 (define (average alot)
-    (cond
-      [(empty? alot) (error "List-of-temperatures cannot be empty")]
-      [else (/ (sum alot) (how-many alot))]))
+  (cond
+    [(empty? alot) (error "List-of-temperatures cannot be empty")]
+    [else (/ (sum alot) (how-many alot))]))
 
 ; List-of-temperatures -> Number
 ; adds up the temperatures on the given list
 (check-expect (sum (cons 1 (cons 2 (cons 3 '())))) 6)
 (check-expect (sum '()) 0)
 (define (sum alot)
-    (cond
-      [(empty? alot) 0]
-      [else (+ (first alot) (sum (rest alot)))]))
+  (cond
+    [(empty? alot) 0]
+    [else (+ (first alot) (sum (rest alot)))]))
 
 ; List-of-temperatures -> Number
 ; counts the temperatures on the given list
@@ -27,4 +27,3 @@
   (cond
     [(empty? alot) 0]
     [else (+ 1 (how-many (rest alot)))]))
-

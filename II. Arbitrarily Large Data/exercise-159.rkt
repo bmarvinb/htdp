@@ -8,16 +8,13 @@
 (define WIDTH 30)
 (define XSHOTS (- (/ WIDTH 2) 5))
 
-; graphical constants
 (define BACKGROUND (empty-scene WIDTH HEIGHT))
 (define SHOT (rectangle 3 3 "solid" "green"))
 
 ; ShotWorld -> ShotWorld
 ; moves each shot up by one pixel
-
 (check-expect (tock (cons 5 (cons 4 (cons 3 '())))) (cons 4 (cons 3 (cons 2 '()))))
 (check-expect (tock (cons 2 (cons 1 (cons 0 '())))) (cons 1 '()))
-
 (define (tock w)
   (cond
     [(empty? w) '()]
@@ -31,12 +28,10 @@
 
 ; ShotWorld -> Image
 ; adds each shot y on w at (XSHOTS,y} to BACKGROUND
-
 (check-expect (to-image (cons 9 '()))
               (place-image SHOT XSHOTS 9 BACKGROUND))
 (check-expect (to-image (cons 9 (cons 11 '())))
               (place-image SHOT XSHOTS 9 (place-image SHOT XSHOTS 11 BACKGROUND)))
-
 (define (to-image w)
   (cond
     [(empty? w) BACKGROUND]
@@ -49,5 +44,3 @@
     [on-tick tock]
     [on-key keyh]
     [to-draw to-image]))
-
-;(main (cons 0 '()))

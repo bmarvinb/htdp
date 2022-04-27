@@ -21,9 +21,9 @@
 (check-expect (string-first "Abc") "A")
 (check-error (check-expect (string-first 1) "Not string"))
 (define (string-first str)
-   (if (string? str)
-       (substring str 0 1)
-       (error "Not string")))
+  (if (string? str)
+      (substring str 0 1)
+      (error "Not string")))
 
 ; Exercise 195. Design the function starts-with#,
 ; which consumes a Letter and Dictionary and then counts how many words in the given Dictionary start with the given Letter.
