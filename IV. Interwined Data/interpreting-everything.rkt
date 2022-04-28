@@ -52,6 +52,7 @@
 
 (define UNDEFINED-CON "Constant definition not found")
 (define UNDEFINED-FUN "Function definition not found")
+(define WRONG "Invalid BSL-expr")
 
 ;; BSL-da-all is [List-of BSL-da]
 (define da-all (list x y f g h))
@@ -79,6 +80,7 @@
     [else (lookup-fun-def (rest da) f)]))
 
 ;; Exercise 361. Design eval-all
+;; BSL-expr BSL-da-all -> Number
 (check-expect (eval-all 'x da-all) 1)
 (check-expect (eval-all 'y da-all) 2)
 (check-error (eval-all 'z da-all) UNDEFINED-CON)
@@ -105,6 +107,68 @@
 
 ;; Exercise 362. Design a function interpreter
 
-;; S-expr Sl -> Number
-;(define (interpreter s-expr sl)
-;  ())
+;; S-expr -> BSL-expr
+(check-expect (parse-expr '1) '1)
+(check-expect (parse-expr '(+ 10 -10)) (make-add 10 -10))
+(check-expect (parse-expr '(+ (* 5 5) 25)) (make-add (make-mul 5 5) 25))
+(check-expect (parse-expr '(sqr 4)) (make-fun 'sqr 4))
+(check-expect (parse-expr '(sqr (* 4 4))) (make-fun 'sqr (make-mul 4 4)))
+(check-expect (parse-expr 'x) 'x)
+(check-error (parse-expr "hello world") WRONG)
+(check-error (parse-expr '(1 2 3)) WRONG)
+(check-error (parse-expr '(string-append "hello" "world")) WRONG)
+(define (parse-expr s)
+  (local (;; Any -> Boolean
+          (define (atom? s)
+            (or (number? s) (string? s) (symbol? s)))
+
+          ;; Atom -> BSL-expr 
+          (define (parse-atom s)
+            (cond
+              [(number? s) s]
+              [(symbol? s) s]
+              [(string? s) (error WRONG)]))
+          
+          ;; SL -> BSL-expr
+          (define (parse-sl s)
+            (cond
+              [(and (= (length s) 2) (symbol? (first s)))
+               (make-fun (parse-expr (first s))
+                         (parse-expr (second s)))]
+              [(and (= (length s) 3) (symbol? (first s)))
+               (cond
+                 [(symbol=? (first s) '+) (make-add (parse-expr (second s))
+                                                    (parse-expr (third s)))]
+                 [(symbol=? (first s) '*) (make-mul (parse-expr (second s))
+                                                    (parse-expr (third s)))]
+                 [else (error WRONG)])]
+              [else (error WRONG)])))
+    (cond
+      [(atom? s) (parse-atom s)]
+      [else (parse-sl s)])))
+
+;; SL -> BSL-da
+(define (parse-sl d)
+  (cond
+    [(and (symbol=? 'define (first d)) (= 3 (length d)))
+     (cond
+       [(symbol? (second d))
+        (make-con (second d) (third d))]
+       [else (make-fun-def
+              (first (second d))
+              (second (second d))
+              (parse-expr (third d)))])]
+    [else (error WRONG)]))
+
+;; S-expr SL -> Nubmer
+;; Evaluates the given expression
+(check-expect (interpreter 1 '()) 1)
+(check-error (interpreter 'x '()) UNDEFINED-CON)
+(check-expect (interpreter 'x '((define x 3))) 3)
+(check-expect (interpreter '(+ 1 1) '()) 2)
+(check-expect (interpreter '(* 2 3) '()) 6)
+(check-error (interpreter '(f 3) '()) UNDEFINED-FUN)
+(check-expect (interpreter '(f 3) '((define (f x) (* 3 x)))) (* 3 3))
+(check-expect (interpreter '(f x) '((define x 2) (define (f x) (* 3 x)))) (* 3 2))
+(define (interpreter ex sl)
+  (eval-all (parse-expr ex) (map parse-sl sl)))
