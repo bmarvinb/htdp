@@ -1,0 +1,97 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname xml) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; ==================== XML as S-expressions ====================
+
+;; An Xexpr is a list:
+;; – (cons Symbol Body)
+;; – (cons Symbol (cons [List-of Attribute] Body))
+;; where Body is short for [List-of Xexpr]
+;; An Attribute is a list of two items:
+;;   (cons Symbol (cons String '()))
+
+;; Exercise 364
+;; 1) '(transition ((from "seen-e") (to "seen-f")))
+;; 2) '(ul (li (word word)) (li (word )))
+
+;; Exercise 365
+;; 1) <server name="example.org"></server>
+;; 2) <carcas>
+;;      <board><grass/></board>
+;;      <player name="sam"/>
+;;    </carcas>
+;; 3) <start />
+
+;; Examples
+(define a0 '((initial "X")))
+ 
+(define e0 '(machine))
+(define e1 `(machine ,a0))
+(define e2 '(machine (action)))
+(define e3 '(machine () (action)))
+(define e4 `(machine ,a0 (action) (action)))
+
+; [List-of Attribute] or Xexpr.v2 -> Boolean
+; is x a list of attributes
+(define (list-of-attributes? x)
+  (cond
+    [(empty? x) #true]
+    [else
+     (local ((define possible-attribute (first x)))
+       (cons? possible-attribute))]))
+
+;; Xexpr -> [List-of Attribute]
+;; retrieves the list of attributes of xe
+(check-expect (xexpr-attr e0) '())
+(check-expect (xexpr-attr e1) '((initial "X")))
+(check-expect (xexpr-attr e2) '())
+(check-expect (xexpr-attr e3) '())
+(check-expect (xexpr-attr e4) '((initial "X")))
+(define (xexpr-attr xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else
+       (local ((define loa-or-x (first optional-loa+content)))
+         (if (list-of-attributes? loa-or-x)
+             loa-or-x
+             '()))])))
+
+;; Exercise 366
+;; Design xexpr-name and xexpr-content
+
+;; Xexpr -> Symbol
+;; extracts the tag of the element
+(check-expect (xexpr-name e0) 'machine)
+(check-expect (xexpr-name e1) 'machine)
+(check-expect (xexpr-name e4) 'machine)
+(define (xexpr-name xe)
+  (first xe))
+
+;; Xexpr -> [List-of Xexpr]
+;; extract the list of content elements
+(check-expect (xexpr-content e0) '())
+(check-expect (xexpr-content e1) '())
+(check-expect (xexpr-content e2) '((action)))
+(check-expect (xexpr-content e3) '((action)))
+(check-expect (xexpr-content e4) '((action) (action)))
+(define (xexpr-content xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else
+       (local ((define loa-or-x (first optional-loa+content)))
+         (if (list-of-attributes? loa-or-x)
+             (rest optional-loa+content)
+             optional-loa+content))])))
+
+
+;; Exercise 369
+;; [List-of Attribute] Symbol -> String or #false
+(check-expect (find-attr (xexpr-attr e2) 'initial) #false)
+(check-expect (find-attr (xexpr-attr e4) 'initial) "X")
+(define (find-attr loa s)
+  (local ((define result (assq s loa)))
+    (if (false? result)
+        #false
+        (second result))))
