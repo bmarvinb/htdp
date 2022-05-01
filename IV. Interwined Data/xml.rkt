@@ -10,19 +10,7 @@
 ;; An Attribute is a list of two items:
 ;;   (cons Symbol (cons String '()))
 
-;; Exercise 364
-;; 1) '(transition ((from "seen-e") (to "seen-f")))
-;; 2) '(ul (li (word word)) (li (word )))
-
-;; Exercise 365
-;; 1) <server name="example.org"></server>
-;; 2) <carcas>
-;;      <board><grass/></board>
-;;      <player name="sam"/>
-;;    </carcas>
-;; 3) <start />
-
-;; Examples
+;; XML Data Examples
 (define a0 '((initial "X")))
  
 (define e0 '(machine))
@@ -84,7 +72,6 @@
          (if (list-of-attributes? loa-or-x)
              (rest optional-loa+content)
              optional-loa+content))])))
-
 
 ;; Exercise 369
 ;; [List-of Attribute] Symbol -> String or #false
