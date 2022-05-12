@@ -142,3 +142,93 @@
           (define mask (map keep? schema)))
     (make-db (filter keep? schema)
              (map row-project content))))
+
+
+
+;; Exercise 408. Design the function select
+;; DB [List-of Label] Predicate -> [List-of Row]
+;; The result is a list of rows that satisfy the given predicate,
+;; projected down to the given set of labels
+(check-expect (select school-db '("Name" "Present") (lambda (r) (> (second r) 40)))
+              `())
+(check-expect (select school-db '("Name" "Age") (lambda (r) (not (third r))))
+              `(("Bob" 25)
+                ("Dave" 32)))
+(check-expect (select school-db '("Name" "Present") (lambda (r) (> (second r) 30)))
+              `(("Alice" #true)
+                ("Dave"  #false)))
+(check-expect (select school-db '("Name") (lambda (r) (> (string-length (first r)) 0)))
+              `(("Alice")
+                ("Bob")
+                ("Carol")
+                ("Dave")))
+(define (select db lol pred)
+  (local ((define schema  (db-schema db))
+          (define content (db-content db))
+ 
+          ; Spec -> Boolean
+          ; does this column belong to the new schema
+          (define (keep? c)
+            (member? (first c) lol))
+ 
+          ; Row -> Row
+          ; retains those columns whose name is in labels
+          (define (row-project row)
+            (foldr (lambda (cell m c) (if m (cons cell c) c))
+                   '()
+                   row
+                   mask))
+          (define mask (map keep? schema)))
+    (map row-project (filter pred content))))
+
+
+;; Exercise 409. Design reorder
+
+;; Schema Label -> Number
+(define (get-index s label)
+  (cond
+    [(empty? s) (error "Not found")]
+    [else (if (eq? (first (first s)) label)
+              0
+              (add1 (get-index (rest s) label)))]))
+
+;; Schema Number -> Schema
+(define (updated-schema s index)
+  (list-ref s index))
+
+;; Row [List-of Number] -> Row
+(define (updated-cells row loi)
+  (cond
+    [(empty? loi) '()]
+    [else (cons (list-ref row (first loi))
+                (updated-cells row (rest loi)))]))
+
+;; DB [List-of Labels] -> DB
+(define (reorder db lol)
+  (local ((define schema  (db-schema db))
+          (define content (db-content db))
+          (define indexes (map (lambda (label) (get-index schema label)) lol))
+          (define sorted-schema (map (lambda (index) (updated-schema schema index)) indexes))
+          (define sorted-content (map (lambda (row) (updated-cells row indexes)) content)))
+    (make-db sorted-schema
+             sorted-content)))
+
+
+;; Exercise 410. Design the fuction db-union
+;; DB DB -> DB
+(define (db-union db-1 db-2)
+  (local ((define schema-1 (db-schema db-1))
+          (define schema-2 (db-schema db-2))
+          (define content-1 (db-content db-1))
+          (define content-2 (db-content db-2)))
+    (if (not (equal? schema-1 schema-2))
+        (error "Schema are not uqual")
+        (make-db schema-1
+                 (foldr (lambda (row l) (if (member? row l) l (cons row l)))
+                        content-1
+                        content-2)))))
+
+;; Exercise 411. Design join
+;; DB DB -> DB
+;(define (join db1 db2)
+;  ())
